@@ -3,6 +3,7 @@ import logging
 
 from telegram import __version__ as TG_VER
 
+from di import contextController, userController
 try:
     from telegram import __version_info__
 except ImportError:
@@ -32,6 +33,7 @@ logger = logging.getLogger(__name__)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
+    userController.create(user.id, user.name, user.username, user.language_code, user.is_bot, False, user.first_name, user.last_name, user.link)
     await update.message.reply_html(
         rf"Hi {user.mention_html()}!",
         reply_markup=ForceReply(selective=True),
@@ -43,9 +45,18 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text("Help!")
 
 
-async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def createContext(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Echo the user message."""
-    await update.message.reply_text(update.message.text)
+    try:
+        obj = contextController.create(update.message.text)
+
+        await update.message.reply_text({
+            "id": obj.id,
+            "description": obj.description
+
+        })
+    except Exception as e:
+        await update.message.reply_text(e)
 
 
 def main() -> None:
@@ -58,7 +69,7 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
 
     # on non command i.e message - echo the message on Telegram
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, echo))
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, createContext))
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)
