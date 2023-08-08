@@ -6,5 +6,11 @@ class ContextController:
     def __init__(self, context_service: ContextService):
         self.context_service = context_service
 
-    def create(self, description: str) -> Context:
-        return self.context_service.create(description)
+    def create(self, description: str, title:str) -> Context:
+        return self.context_service.create(description, title)
+    def find_by_id(self, id: int) -> Context:
+        return self.context_service.find_by_id(id)
+    def find_by_description(self, description: str) -> Context:
+        return self.context_service.find_by_description(description)
+    def list_all(self) -> None:
+        return self.context_service.list_all()

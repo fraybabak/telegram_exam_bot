@@ -13,12 +13,12 @@ class ContextRepository(Repository):
         self.model = ContextModel
 
     def create(self, context: Context) -> Context:
-        context_model = self.model(description=context.description)
+        context_model = self.model(description=context.description, title=context.title)
         self.db.add(context_model)
         self.db.commit()
         self.db.refresh(context_model)
         # type: ignore
-        return Context(id=context_model.id, description=context_model.description)
+        return Context(id=context_model.id, description=context_model.description, title=context_model.title)
 
     def read(self, id: int) -> Context:
         context_model = self.db.query(self.model).filter(

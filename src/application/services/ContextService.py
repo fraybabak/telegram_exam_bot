@@ -8,8 +8,8 @@ class ContextService:
     def __init__(self, contextRepository: ContextRepository):
         self.contextRepository = contextRepository
 
-    def create(self, description: str) -> Context:
-        return self.contextRepository.create(Context(description))
+    def create(self, description: str, title:str) -> Context:
+        return self.contextRepository.create(Context(description, title))
 
     def read(self, id: int) -> Context:
         return self.contextRepository.read(id)

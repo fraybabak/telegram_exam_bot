@@ -14,8 +14,8 @@ class UserController:
     # def read(self, id: int) -> User:
     #     return self.userService.read(id)
 
-    # def find_by_external_id(self, external_id: int) -> User:
-    #     return self.userService.find_by_external_id(external_id)
+    def find_by_external_id(self, external_id: int) -> User:
+        return self.userService.find_by_external_id(external_id)
 
     # def update(self, id: int, external_id: int, name: str, username: str, language_code: str, is_bot: bool, is_premium: bool, first_name: str, last_name: str, link: str) -> None:
     #     self.userService.update(id, external_id, name, username, language_code, is_bot, is_premium, first_name, last_name, link)
