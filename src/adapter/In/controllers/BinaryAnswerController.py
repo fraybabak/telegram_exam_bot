@@ -9,4 +9,4 @@ class BinaryAnswerController:
         self.binaryAnswerService = binaryAnswerService
 
     def create(self, answer: bool, question_id: int, user_id: int, campaign_id:int) -> BinaryAnswer:
-        return self.binaryAnswerService.create(answer, question_id, user_id, campaign_id)
+        return self.binaryAnswerService.create(answer=answer,question_id= question_id, user_id=user_id, campaign_id=campaign_id)

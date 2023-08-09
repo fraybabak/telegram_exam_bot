@@ -1,9 +1,9 @@
 
-import logging
+import logging, json
 
 from telegram import __version__ as TG_VER
 
-from di import contextController, userController, binaryCampaignController
+from di import contextController, userController, binaryCampaignController, binaryQuestionController, binaryAnswerController
 from bot.middleware.auth import Auth
 try:
     from telegram import __version_info__
@@ -54,9 +54,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
     exam_context = contextController.list_all()
     buttons = [
-        [
-            InlineKeyboardButton(text="Select Quiz", callback_data=str(START_CAMPAIGN)),
-        ],
+   [
+        InlineKeyboardButton(text=exam.title, callback_data=json.dumps({
+            't': 'start',
+            'i': exam.id,
+            'u': context.user_data['internal_id'],
+        })) for exam in exam_context
+    ],
     ]
     keyboard = InlineKeyboardMarkup(buttons)
 
@@ -73,6 +77,70 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     context.user_data[START_OVER] = False
 
     return START_CAMPAIGN
+
+def create_keyboard(question_number, context: ContextTypes.DEFAULT_TYPE):
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("Yes", callback_data=
+                json.dumps({
+                    't': 'answer',
+                    'a': True,
+                    'q': question_number,
+                    'u': context.user_data['internal_id'],
+
+                })
+            ),
+            InlineKeyboardButton("No", callback_data=
+                json.dumps({
+                    't': 'answer',
+                    'a': False,
+                    'q': question_number,
+                    'u': context.user_data['internal_id'],
+                })
+            )
+        ]
+    ])
+
+@Auth
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Parses the CallbackQuery and updates the message text."""
+    query = update.callback_query
+    data = json.loads(query.data)
+    if data['t'] == 'start':
+        campaign = binaryCampaignController.create(data['u'], data['i'])
+        questions = binaryQuestionController.find_by_context_id(data['i'])
+        context.user_data['current_state'] = {
+            'campaign_id': campaign.id,
+            'context_id': data['i'],
+            'user_id': data['u'],
+            'questions': [{
+                'question_id': question.id,
+                'question': question.question,
+                
+            } for question in questions],
+            'current_question': 0,
+            'answers': [],
+        }
+        await query.answer()
+        await update.callback_query.edit_message_text(text=questions[0].question, reply_markup=create_keyboard(question_number=0, context=context))
+    elif data['t'] == 'answer':
+        current_state = context.user_data['current_state']
+        if current_state['current_question'] == len(current_state['questions']):
+            await query.answer()
+            await update.callback_query.edit_message_text(text="Thank you for your participation")
+            return STOPPING
+        question = current_state['questions'][data['q']]
+        answer = binaryAnswerController.create(user_id=data['u'], question_id=question['question_id'], answer=data['a'], campaign_id=current_state['campaign_id'])
+        current_state['answers'].append({
+            'question_id': current_state['questions'][data['q']]['question_id'],
+            'answer': data['a'],
+        })
+        current_state['current_question'] += 1
+        await update.callback_query.edit_message_text(text=current_state['questions'][data['q']+1]['question'], reply_markup=create_keyboard(question_number=data['q']+1, context=context))
+
+
+
+
 
 @Auth
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -115,8 +183,8 @@ def main() -> None:
 
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler('START_CAMPAIGN', start_campaign))
+    application.add_handler(CallbackQueryHandler(button))
 
-    # on non command i.e message - echo the message on Telegram
     # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, createContext))
 
     # Run the bot until the user presses Ctrl-C

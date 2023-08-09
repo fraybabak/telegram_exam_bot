@@ -30,7 +30,7 @@ class UserRepository(Repository):
         user_model = self.db.query(self.model).filter(
             self.model.external_id == external_id).first()
         if user_model is None:
-            raise Exception("User not found")
+            return None
         return User(id=user_model.id, external_id=user_model.external_id, name=user_model.name, username=user_model.username, language_code=user_model.language_code, is_bot=user_model.is_bot, is_premium=user_model.is_premium, first_name=user_model.first_name, last_name=user_model.last_name, link=user_model.link)
 
     def check_if_user_exists(self, external_id: int) -> bool:

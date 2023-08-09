@@ -10,5 +10,4 @@ class BinaryAnswerService:
         self.binaryAnswerRepository = binaryAnswerRepository
 
     def create(self, answer: bool, question_id: int, user_id: int, campaign_id:int) -> BinaryAnswer:
-        binaryAnswer = BinaryAnswer(answer=answer, question_id=question_id, user_id=user_id, campaign_id=campaign_id)
-        return self.binaryAnswerRepository.create(binaryAnswer)
+        return self.binaryAnswerRepository.create(answer=answer, question_id=question_id, user_id=user_id, campaign_id=campaign_id)

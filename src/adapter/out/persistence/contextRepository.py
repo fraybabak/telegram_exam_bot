@@ -25,14 +25,21 @@ class ContextRepository(Repository):
             self.model.id == id).first()
         if context_model is None:
             raise Exception("Context not found")
-        return Context(id=context_model.id, description=context_model.description)
+        return Context(id=context_model.id, description=context_model.description, title = context_model.title)
 
     def find_by_description(self, description: str) -> Context:
         context_model = self.db.query(self.model).filter(
             self.model.description == description).first()
         if context_model is None:
             raise Exception("Context not found")
-        return Context(id=context_model.id, description=context_model.description)
+        return Context(id=context_model.id, description=context_model.description, title = context_model.title)
+
+    def find_by_title(self, title: str) -> Context:
+        context_model = self.db.query(self.model).filter(
+            self.model.title == title).first()
+        if context_model is None:
+            raise Exception("Context not found")
+        return Context(id=context_model.id, description=context_model.description, title = context_model.title)
 
     def update(self, id: int, context: Context) -> Context:
 
@@ -41,9 +48,10 @@ class ContextRepository(Repository):
         if context_model is None:
             raise Exception("Context not found")
         context_model.description = context.description
+        context_model.title = context.title
         self.db.commit()
         self.db.refresh(context_model)
-        return Context(id=context_model.id, description=context_model.description)
+        return Context(id=context_model.id, description=context_model.description, title = context_model.title)
 
     def delete(self, id: int) -> bool:
         context_model = self.db.query(self.model).filter(
@@ -55,4 +63,4 @@ class ContextRepository(Repository):
         return True
 
     def list_all(self) -> List[Context]:
-        return [Context(id=context_model.id, description=context_model.description) for context_model in self.db.query(self.model).all()]
+        return [Context(id=context_model.id, description=context_model.description, title = context_model.title) for context_model in self.db.query(self.model).all()]

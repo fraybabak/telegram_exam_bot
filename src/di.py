@@ -13,6 +13,8 @@ from adapter.out.persistence.contextRepository import ContextRepository
 from adapter.In.controllers.ContextController import ContextController
 from adapter.In.controllers.BinaryCampaingController import BinaryCampaignController
 from adapter.In.controllers.BinaryAnswerController import BinaryAnswerController
+from adapter.In.controllers.binaryQuestionController import BinaryQuestionController
+
 
 from adapter.In.controllers.UserController import UserController
 
@@ -28,7 +30,7 @@ contextController = injector.get(ContextController)
 userController = injector.get(UserController)
 binaryAnswerController = injector.get(BinaryAnswerController)
 binaryCampaignController = injector.get(BinaryCampaignController)
-
+binaryQuestionController = injector.get(BinaryQuestionController)
 
 
 

@@ -19,10 +19,12 @@ class ContextService:
 
     def update(self, id: int, description: str) -> None:
         self.contextRepository.update(id, Context(description))
+    def find_by_title(self, title: str) -> Context:
+        return self.contextRepository.find_by_title(title)
 
     def delete(self, id: int) -> None:
         self.contextRepository.delete(id)
 
-    def list_all(self) -> None:
-        for context in self.contextRepository.list_all():
-            print(context)
+    def list_all(self) -> list[Context]:
+        return self.contextRepository.list_all()
+    

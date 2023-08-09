@@ -14,7 +14,16 @@ class BinaryQuestionService:
         self.contextService = contextService
 
     def create(self, question, answer, rating, context_id: int) -> BinaryQuestion:
-        context = self.contextService.read(context_id)
-        if context is None:
-            raise Exception("Context not found")
-        return self.binaryQuestionRepository.create(question=question, rating=rating, answer=answer, context_id=context)
+        return self.binaryQuestionRepository.create(question=question, rating=rating, answer=answer, context_id=context_id)
+    
+    def find_by_id(self, id: int) -> BinaryQuestion:
+        return self.binaryQuestionRepository.read(id=id)
+    
+    def find_by_question(self, question: str) -> BinaryQuestion:
+        return self.binaryQuestionRepository.find_by_question(question=question)
+    
+    def find_by_context(self, context_id: int) -> List[BinaryQuestion]:
+        return self.binaryQuestionRepository.find_by_context(context_id=context_id)
+    def find_by_context_and_rating(self, context_id: int, rating: int) -> List[BinaryQuestion]:
+        return self.binaryQuestionRepository.find_by_context_and_rating(context_id=context_id, rating=rating)
+    
