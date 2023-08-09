@@ -4,8 +4,8 @@ from database import Base, session
 
 
 
-class BinaryCampaignModel(Base):
-    __tablename__ = 'binary_campaign'
+class CampaignModel(Base):
+    __tablename__ = 'campaign'
     id = Column(Integer, primary_key=True)
     context_id = Column(Integer, ForeignKey('context.id'), nullable=True)
     user_id = Column(Integer, ForeignKey('user.id'), nullable=True)

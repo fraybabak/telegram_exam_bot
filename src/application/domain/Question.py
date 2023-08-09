@@ -1,6 +1,6 @@
 from application.domain.Context import Context
 
-class BinaryQuestion:
+class Question:
     def __init__(self, question: str, rating: int, context_id: int, id: int = None, answer: bool = None, ):
         """
         :param question: The question of the question.
@@ -14,4 +14,4 @@ class BinaryQuestion:
 
 
     def __str__(self):
-        return f'Question: {self.text}\nRating: {self.rating}'
+        return f'Question: {self.question}\nRating: {self.rating}'

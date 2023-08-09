@@ -1,4 +1,4 @@
-class BinaryAnswer:
+class Answer:
     def __init__(self, answer: bool, question_id: int, user_id: int, campaign_id:int, id: int = None):
         self.answer = answer
         self.question_id = question_id

@@ -1,6 +1,6 @@
 
 
-class BinaryCampaign:
+class Campaign:
     def __init__(self,  is_active, created_at, updated_at, user_id, context_id,  id=None, end_date=None):
         self.id = id
         self.end_date = end_date

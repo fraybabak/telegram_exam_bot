@@ -3,7 +3,7 @@ import logging, json
 
 from telegram import __version__ as TG_VER
 
-from di import contextController, userController, binaryCampaignController, binaryQuestionController, binaryAnswerController
+from di import contextController, userController, campaignController, questionController, answerController
 from bot.middleware.auth import Auth
 try:
     from telegram import __version_info__
@@ -107,8 +107,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     data = json.loads(query.data)
     if data['t'] == 'start':
-        campaign = binaryCampaignController.create(data['u'], data['i'])
-        questions = binaryQuestionController.find_by_context_id(data['i'])
+        campaign = campaignController.create(data['u'], data['i'])
+        questions = questionController.find_by_context_id(data['i'])
         context.user_data['current_state'] = {
             'campaign_id': campaign.id,
             'context_id': data['i'],
@@ -130,7 +130,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             await update.callback_query.edit_message_text(text="Thank you for your participation")
             return STOPPING
         question = current_state['questions'][data['q']]
-        answer = binaryAnswerController.create(user_id=data['u'], question_id=question['question_id'], answer=data['a'], campaign_id=current_state['campaign_id'])
+        answer = answerController.create(user_id=data['u'], question_id=question['question_id'], answer=data['a'], campaign_id=current_state['campaign_id'])
         current_state['answers'].append({
             'question_id': current_state['questions'][data['q']]['question_id'],
             'answer': data['a'],
@@ -154,7 +154,7 @@ async def start_campaign(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     try:
         
         exam_context = contextController.create(update.message.text)
-        campaign = binaryCampaignController.create(context.user_data['internal_id'], exam_context.id)
+        campaign = campaignController.create(context.user_data['internal_id'], exam_context.id)
 
         await update.message.reply_text({
            "campaign_id": campaign.id,

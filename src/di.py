@@ -5,32 +5,30 @@ from injector import Injector
 
 from application.services.ContextService import ContextService
 from application.services.UserService import UserService
-from application.services.binaryAnswerService import BinaryAnswerService
-from application.services.binaryQuestionService import BinaryQuestionService
-from application.services.binaryCampaignService import BinaryCampaignService
+from application.services.AnswerService import answerService
+from application.services.QuestionService import questionService
+from application.services.CampaignService import campaignService
 
-from adapter.out.persistence.contextRepository import ContextRepository
 from adapter.In.controllers.ContextController import ContextController
-from adapter.In.controllers.BinaryCampaingController import BinaryCampaignController
-from adapter.In.controllers.BinaryAnswerController import BinaryAnswerController
-from adapter.In.controllers.binaryQuestionController import BinaryQuestionController
+from adapter.In.controllers.CampaingController import CampaignController
+from adapter.In.controllers.AnswerController import AnswerController
+from adapter.In.controllers.QuestionController import QuestionController
 
 
 from adapter.In.controllers.UserController import UserController
 
 injector = Injector()
 
-contextRepository = injector.get(ContextRepository)
-binaryAnswerService = injector.get(BinaryAnswerService)
-binaryQuestionService = injector.get(BinaryQuestionService)
+answerService = injector.get(answerService)
+questionService = injector.get(questionService)
 contextService = injector.get(ContextService)
 userService = injector.get(UserService)
-binaryCampaignService = injector.get(BinaryCampaignService)
+campaignService = injector.get(campaignService)
 contextController = injector.get(ContextController)
 userController = injector.get(UserController)
-binaryAnswerController = injector.get(BinaryAnswerController)
-binaryCampaignController = injector.get(BinaryCampaignController)
-binaryQuestionController = injector.get(BinaryQuestionController)
+answerController = injector.get(AnswerController)
+campaignController = injector.get(CampaignController)
+questionController = injector.get(QuestionController)
 
 
 
