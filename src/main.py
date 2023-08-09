@@ -79,25 +79,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     return START_CAMPAIGN
 
 def create_keyboard(question_number, context: ContextTypes.DEFAULT_TYPE):
+    answer_range = range(1, 6)
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("Yes", callback_data=
+            InlineKeyboardButton(str(i), callback_data=
                 json.dumps({
                     't': 'answer',
-                    'a': True,
+                    'a': i,
                     'q': question_number,
                     'u': context.user_data['internal_id'],
 
-                })
-            ),
-            InlineKeyboardButton("No", callback_data=
-                json.dumps({
-                    't': 'answer',
-                    'a': False,
-                    'q': question_number,
-                    'u': context.user_data['internal_id'],
-                })
-            )
+                }) 
+            ) for i in answer_range
         ]
     ])
 
@@ -136,7 +129,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             'answer': data['a'],
         })
         current_state['current_question'] += 1
-        await update.callback_query.edit_message_text(text=current_state['questions'][data['q']+1]['question'], reply_markup=create_keyboard(question_number=data['q']+1, context=context))
+        await update.callback_query.edit_message_text(text=current_state['questions'][data['q']+1]['question'] + f"q: {current_state['current_question']}/{len(current_state['questions'])}", reply_markup=create_keyboard(question_number=data['q']+1, context=context))
 
 
 

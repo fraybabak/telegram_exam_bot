@@ -13,8 +13,8 @@ class AnswerRepository(Repository):
         self.model = AnswerModel
 
     def create(self, answer, question_id, user_id, campaign_id) -> Answer:
-        answer_model = self.find_by_question_and_campaign_and_user(
-            question_id, campaign_id, user_id)
+        answer_model = self.exists_by_question_campaign_and_user(
+            question_id=question_id, campaign_id=campaign_id, user_id=user_id)
         if answer_model:
             raise Exception("Answer already exists")
         answer_model = self.model(
@@ -58,6 +58,12 @@ class AnswerRepository(Repository):
         if answer_model is None:
             raise Exception("Answer not found")
         return Answer(id=answer_model.id, answer=answer_model.answer, question_id=answer_model.question_id, user_id=answer_model.user_id, campaign_id=answer_model.campaign_id)
+    def exists_by_question_campaign_and_user(self, question_id: int, campaign_id: int, user_id: int) -> bool:
+        answer_model = self.db.query(self.model).filter(
+            self.model.question_id == question_id, self.model.campaign_id == campaign_id, self.model.user_id == user_id).first()
+        if  answer_model is None:
+            return False
+        return True
 
     def find_by_question_and_campaign_and_user(self, question_id: int, campaign_id: int, user_id:id) -> List[Answer]:
         answer_model = self.db.query(self.model).filter(
