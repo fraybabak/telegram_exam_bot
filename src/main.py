@@ -78,11 +78,26 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     return START_CAMPAIGN
 
+def monitize_option(option):
+    if option == 1:
+        return 'کاملا مخالفم'
+    elif option == 2:
+        return 'مخالفم'
+    elif option == 3:
+        return 'متوسط'
+    elif option == 4:
+        return 'موافقم'
+    elif option == 5:
+        return 'کاملا موافقم'
+    else:
+        return 'نمیدانم'
+        
 def create_keyboard(question_number, context: ContextTypes.DEFAULT_TYPE):
     answer_range = range(1, 6)
+
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton(str(i), callback_data=
+            InlineKeyboardButton(monitize_option(i), callback_data=
                 json.dumps({
                     't': 'answer',
                     'a': i,
@@ -94,42 +109,65 @@ def create_keyboard(question_number, context: ContextTypes.DEFAULT_TYPE):
         ]
     ])
 
+
+def pretty_print_question(question, bread_crumb):
+    # Escape special characters for MarkdownV2
+    escape_chars = '_*[]()~`>#+-=|{}.!'
+    question = ''.join('\\' + char if char in escape_chars else char for char in question)
+    bread_crumb = ''.join('\\' + char if char in escape_chars else char for char in bread_crumb)
+
+    return f" {question} \n {bread_crumb} "
+
+async def start_campaign(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Select an action: Adding parent/child or show data."""
+    data = json.loads(update.callback_query.data)
+    campaign = campaignController.create(data['u'], data['i'])
+    questions = questionController.find_by_context_id(data['i'])
+    context.user_data['current_state'] = {
+        'campaign_id': campaign.id,
+        'context_id': data['i'],
+        'user_id': data['u'],
+        'questions': [{
+            'question_id': question.id,
+            'question': question.question,
+            
+        } for question in questions],
+        'current_question': 0,
+        'answers': [],
+    }
+    return SELECT_ANSWER
+
+
+
+
+async def selecting_answers (update:Update, context: ContextTypes.DEFAULT_TYPE, data) -> None:
+    current_state = context.user_data['current_state']
+    if 'q' not in data and not data.get('q'):
+        return await update.callback_query.edit_message_text(text=pretty_print_question(current_state['questions'][0]['question'] , f"{current_state['current_question']+1}/{len(current_state['questions'])}"), reply_markup=create_keyboard(question_number=0, context=context), parse_mode='MarkdownV2')
+    current_state['current_question'] += 1
+    if current_state['current_question'] == len(current_state['questions']):
+        await update.callback_query.answer()
+        await update.callback_query.edit_message_text(text="Thank you for your participation")
+        return STOPPING
+    question = current_state['questions'][data['q']]
+    answer = answerController.create(user_id=data['u'], question_id=question['question_id'], answer=data['a'], campaign_id=current_state['campaign_id'])
+    current_state['answers'].append({
+        'question_id': current_state['questions'][data['q']]['question_id'],
+        'answer': data['a'],
+    })
+    return await update.callback_query.edit_message_text(text=pretty_print_question(current_state['questions'][data['q']+1]['question'] , f"{current_state['current_question']+1}/{len(current_state['questions'])}"), reply_markup=create_keyboard(question_number=data['q']+1, context=context))
+
 @Auth
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Parses the CallbackQuery and updates the message text."""
     query = update.callback_query
     data = json.loads(query.data)
     if data['t'] == 'start':
-        campaign = campaignController.create(data['u'], data['i'])
-        questions = questionController.find_by_context_id(data['i'])
-        context.user_data['current_state'] = {
-            'campaign_id': campaign.id,
-            'context_id': data['i'],
-            'user_id': data['u'],
-            'questions': [{
-                'question_id': question.id,
-                'question': question.question,
-                
-            } for question in questions],
-            'current_question': 0,
-            'answers': [],
-        }
-        await query.answer()
-        await update.callback_query.edit_message_text(text=questions[0].question, reply_markup=create_keyboard(question_number=0, context=context))
+        await start_campaign(update, context)
+        await selecting_answers(update, context, data)
     elif data['t'] == 'answer':
-        current_state = context.user_data['current_state']
-        if current_state['current_question'] == len(current_state['questions']):
-            await query.answer()
-            await update.callback_query.edit_message_text(text="Thank you for your participation")
-            return STOPPING
-        question = current_state['questions'][data['q']]
-        answer = answerController.create(user_id=data['u'], question_id=question['question_id'], answer=data['a'], campaign_id=current_state['campaign_id'])
-        current_state['answers'].append({
-            'question_id': current_state['questions'][data['q']]['question_id'],
-            'answer': data['a'],
-        })
-        current_state['current_question'] += 1
-        await update.callback_query.edit_message_text(text=current_state['questions'][data['q']+1]['question'] + f"q: {current_state['current_question']}/{len(current_state['questions'])}", reply_markup=create_keyboard(question_number=data['q']+1, context=context))
+        await selecting_answers(update, context, data)
+
 
 
 
@@ -141,22 +179,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     await update.message.reply_text("Help!")
 
 
-@Auth
-async def start_campaign(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Echo the user message."""
-    try:
-        
-        exam_context = contextController.create(update.message.text)
-        campaign = campaignController.create(context.user_data['internal_id'], exam_context.id)
-
-        await update.message.reply_text({
-           "campaign_id": campaign.id,
-              "exam_context_id": exam_context.id,
-                "user_id": context.user_data['internal_id'],
-
-        })
-    except Exception as e:
-        await update.message.reply_text(e)
 
 
 @Auth
@@ -175,7 +197,6 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
 
     application.add_handler(CommandHandler("help", help_command))
-    application.add_handler(CommandHandler('START_CAMPAIGN', start_campaign))
     application.add_handler(CallbackQueryHandler(button))
 
     # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, createContext))
