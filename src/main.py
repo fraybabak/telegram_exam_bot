@@ -3,7 +3,7 @@ import logging, json
 
 from telegram import __version__ as TG_VER
 
-from di import contextController, userController, campaignController, questionController, answerController
+from di import contextController, userController, campaignController, questionController, answerController, scoreController
 from bot.middleware.auth import Auth
 try:
     from telegram import __version_info__
@@ -146,6 +146,7 @@ async def selecting_answers (update:Update, context: ContextTypes.DEFAULT_TYPE, 
         return await update.callback_query.edit_message_text(text=pretty_print_question(current_state['questions'][0]['question'] , f"{current_state['current_question']+1}/{len(current_state['questions'])}"), reply_markup=create_keyboard(question_number=0, context=context), parse_mode='MarkdownV2')
     current_state['current_question'] += 1
     if current_state['current_question'] == len(current_state['questions']):
+        calculate_score = scoreController.create(user_id=data['u'], campaign_id=current_state['campaign_id'])
         await update.callback_query.answer()
         await update.callback_query.edit_message_text(text="Thank you for your participation")
         return STOPPING
