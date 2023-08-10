@@ -50,7 +50,7 @@ STOPPING = ConversationHandler.END
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Select an action: Adding parent/child or show data."""
     text = (
-        "Welcome To sycho Test, Please select Quiz test. To abort, simply type /stop."
+        "سلام، به ربات تست سایکو خوش آمدید. لطفا یکی از آزمون های زیر را انتخاب کنید."
     )
     exam_context = contextController.list_all()
     buttons = [
@@ -70,7 +70,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.callback_query.edit_message_text(text=text, reply_markup=keyboard)
     else:
         await update.message.reply_text(
-            "Hi, I'm Sycho Test Bot. I can help you to know your mental health. "
+            "سلام، به ربات تست سایکو خوش آمدید. لطفا یکی از آزمون های زیر را انتخاب کنید.",
         )
         await update.message.reply_text(text=text, reply_markup=keyboard)
 
@@ -137,7 +137,9 @@ async def start_campaign(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     }
     return SELECT_ANSWER
 
-
+async def send_result(update: Update, context: ContextTypes.DEFAULT_TYPE, file_path) -> None:
+    with open(file_path, 'rb') as file:
+        await context.bot.send_document(chat_id=update.effective_chat.id, document=file)
 
 
 async def selecting_answers (update:Update, context: ContextTypes.DEFAULT_TYPE, data) -> None:
@@ -146,9 +148,12 @@ async def selecting_answers (update:Update, context: ContextTypes.DEFAULT_TYPE, 
         return await update.callback_query.edit_message_text(text=pretty_print_question(current_state['questions'][0]['question'] , f"{current_state['current_question']+1}/{len(current_state['questions'])}"), reply_markup=create_keyboard(question_number=0, context=context), parse_mode='MarkdownV2')
     current_state['current_question'] += 1
     if current_state['current_question'] == len(current_state['questions']):
-        calculate_score = scoreController.create(user_id=data['u'], campaign_id=current_state['campaign_id'])
         await update.callback_query.answer()
-        await update.callback_query.edit_message_text(text="Thank you for your participation")
+        await update.callback_query.edit_message_text(text="در حال محاسبه نتیجه ...")
+        calculate_score = scoreController.create(user_id=update.effective_user.id, campaign_id=current_state['campaign_id'])
+        await send_result(update, context, calculate_score)
+        await update.callback_query.edit_message_text(text="نتیجه آزمون شما ارسال شد.این آزمون صرفا جهت سنجش وضعیت روانی شما می باشد و نباید به عنوان تشخیص بیماری مورد استفاده قرار گیرد.")
+
         return STOPPING
     question = current_state['questions'][data['q']]
     answer = answerController.create(user_id=data['u'], question_id=question['question_id'], answer=data['a'], campaign_id=current_state['campaign_id'])
@@ -200,9 +205,6 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CallbackQueryHandler(button))
 
-    # application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, createContext))
-
-    # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 

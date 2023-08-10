@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="//fdn.fontcdn.ir">
+    <link rel="preconnect" href="//v1.fontapi.ir">
+    <link href="https://v1.fontapi.ir/css/Samim" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Samim', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="container mx-auto">
+        <!-- Profile Section -->
+        <div class="bg-white p-4 rounded shadow mb-4">
+            <h2 class="text-xl font-bold">پروفایل</h2>
+            <p>نام: Hamid safaeian</p>
+            <p>نام خانوادگی: None</p>
+        </div>
+
+        <!-- Quiz About Section -->
+        <div class="bg-white p-4 rounded shadow mb-4">
+            <h2 class="text-xl font-bold">آزمون</h2>
+            <p>نام آزمون: ADHD</p>
+            <p>توضیحات: ADHD یک اختلال رایج است که بچه‌ها و نوجوانان را تحت تأثیر قرار می‌دهد، در حالی که ADHD در بزرگ‌ترها رایج‌تر است و با ریسک بالاتری از افسردگی و اضطراب همراه است.</p>
+        </div>
+
+        <!-- Chart Section -->
+<div class="bg-white p-4 rounded shadow mb-4">
+    <h2 class="text-xl font-bold">نمودار</h2>
+    <p>امتیاز: 175</p>
+    <p>درصد اختلال: 58%</p>
+    <p>اختلال کامل: 300</p>
+    <div style="width: 200px; height: 200px;"> <!-- Container with fixed size -->
+        <canvas id="myPieChart"></canvas>
+    </div>
+    <script>
+        var ctx = document.getElementById('myPieChart').getContext('2d');
+        var myPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['درصد اختلال', 'نرمال'],
+                datasets: [{
+                    data: [58, 100 - 58],
+                    backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+                    borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+                    borderWidth: 1
+                }]
+            }
+        });
+    </script>
+</div>
+
+
+
+
+        <!-- Questions and Answers Section -->
+        <div class="bg-white p-4 rounded shadow">
+            <h2 class="text-xl font-bold">سوالات و پاسخ‌ها</h2>
+            
+                <div class="mb-2">
+                    <strong>آیا اغلب به نظر می‌آید که وقتی به طور مستقیم با شما صحبت می‌شود، گوش نمی‌دهید؟:</strong> مخالفم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا به طور مکرر در دنبال کردن دستورالعمل‌ها شکست می‌خورید؟:</strong> مخالفم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا اغلب با سازماندهی کردن وظایف مشکل دارید؟:</strong> موافقم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا اغلب چیزهای ضروری برای وظایف را از دست می‌دهید؟:</strong> مخالفم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا به راحتی توسط محرک‌های اضافی پرت می‌شوید؟:</strong> موافقم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا اغلب در فعالیت‌های روزمره فراموشکار هستید؟:</strong> موافقم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا به طور مکرر با دست‌ها خود را می‌زنید یا می‌فشارید؟:</strong> موافقم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا اغلب از صندلی خود برخاسته و می‌روید در موقعیت‌هایی که انتظار می‌رود؟:</strong> کاملا مخالفم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا با انتظار برای نوبت خود مشکل دارید؟:</strong> متوسط
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا به طور مکرر دیگران را قطع می‌کنید یا بر آن‌ها می‌افتید؟:</strong> مخالفم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا اغلب بیش از حد صحبت می‌کنید؟:</strong> متوسط
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا اغلب نمی‌توانید به طور آرام در فعالیت‌های تفریحی شرکت کنید؟:</strong> مخالفم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا به طور مکرر در موقعیت‌هایی که نامناسب است دویدن یا نقل قول می‌کنید؟:</strong> موافقم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا اغلب تصمیم‌های پرشتابی می‌گیرید بدون اینکه آن‌ها را کاملاً بیاندیشید؟:</strong> مخالفم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا پیدا کردن چالش برای ماندن در موضوع هنگام صحبت کردن برای شما سخت است؟:</strong> متوسط
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا به طور مکرر اشیاء را گم می‌کنید و با سازماندهی وسایل شخصی خود مشکل دارید؟:</strong> مخالفم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا اغلب با دنبال کردن دستورالعمل‌های چند مرحله‌ای مشکل دارید؟:</strong> موافقم
+                </div>
+            
+                <div class="mb-2">
+                    <strong>آیا پیدا کردن تمرکز بر وظایفی که تلاش ذهنی طولانی مدت می‌طلبد برای شما سخت است؟:</strong> متوسط
+                </div>
+            
+        </div>
+    </div>
+</body>
+</html>

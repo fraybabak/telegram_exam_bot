@@ -9,6 +9,7 @@ from application.services.AnswerService import answerService
 from application.services.QuestionService import questionService
 from application.services.CampaignService import campaignService
 from application.services.ScoreService import ScoreService
+from application.services.ReportService import ReportService
 
 from adapter.In.controllers.ContextController import ContextController
 from adapter.In.controllers.CampaingController import CampaignController
@@ -24,6 +25,7 @@ injector = Injector()
 answerService = injector.get(answerService)
 questionService = injector.get(questionService)
 contextService = injector.get(ContextService)
+
 scoreService = injector.get(ScoreService)
 userService = injector.get(UserService)
 campaignService = injector.get(campaignService)

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="//fdn.fontcdn.ir">
+    <link rel="preconnect" href="//v1.fontapi.ir">
+    <link href="https://v1.fontapi.ir/css/Samim" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Samim', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="container mx-auto">
+        <!-- Profile Section -->
+        <div class="bg-white p-4 rounded shadow mb-4">
+            <h2 class="text-xl font-bold">پروفایل</h2>
+            <p>نام: {{user.first_name}}</p>
+            <p>نام خانوادگی: {{user.last_name}}</p>
+        </div>
+
+        <!-- Quiz About Section -->
+        <div class="bg-white p-4 rounded shadow mb-4">
+            <h2 class="text-xl font-bold">آزمون</h2>
+            <p>نام آزمون: {{quiz.quiz_title}}</p>
+            <p>توضیحات: {{quiz.quiz_description}}</p>
+        </div>
+
+        <!-- Chart Section -->
+<div class="bg-white p-4 rounded shadow mb-4">
+    <h2 class="text-xl font-bold">نمودار</h2>
+    <p>امتیاز: {{score}}</p>
+    <p>درصد اختلال: {{score_percent}}%</p>
+    <p>اختلال کامل: {{max_score}}</p>
+    <div style="width: 200px; height: 200px;"> <!-- Container with fixed size -->
+        <canvas id="myPieChart"></canvas>
+    </div>
+    <script>
+        var ctx = document.getElementById('myPieChart').getContext('2d');
+        var myPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['درصد اختلال', 'نرمال'],
+                datasets: [{
+                    data: [{{score_percent}}, 100 - {{ score_percent}}],
+                    backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+                    borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+                    borderWidth: 1
+                }]
+            }
+        });
+    </script>
+</div>
+
+
+
+
+        <!-- Questions and Answers Section -->
+        <div class="bg-white p-4 rounded shadow">
+            <h2 class="text-xl font-bold">سوالات و پاسخ‌ها</h2>
+            {% for item in questions_and_answers %}
+                <div class="mb-2">
+                    <strong>{{ item.question }}:</strong> {{ item.answer_str }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

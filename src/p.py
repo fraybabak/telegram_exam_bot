@@ -1,8 +1,8 @@
-from di import contextController
+from di import scoreController
 
 
 def main():
-    contextController.create("test")
+    scoreController.create(campaign_id=31, user_id=3914401)
 
 
 
