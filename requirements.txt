@@ -9,6 +9,7 @@ exceptiongroup==1.1.2
 fonttools==4.42.0
 gobject==0.1.0
 h11==0.14.0
+html2image==2.0.3
 html5lib==1.1
 httpcore==0.17.3
 httpx==0.24.1
