@@ -4,7 +4,7 @@ path_to_chrome = "/usr/bin/google-chrome-stable"
 class ReportRepository:
 
     def __init__(self):
-        self.hti = Html2Image(output_path="src/public/images", browser_executable=path_to_chrome)
+        self.hti = Html2Image(output_path="src/public/images", browser_executable=path_to_chrome, custom_flags=['--disable-gpu'])
 
     def create_report(self, report, template_name):
         template_loader = jinja2.FileSystemLoader(searchpath="src/templates")
