@@ -19,7 +19,7 @@ class ReportRepository:
             from html2image import Html2Image
             path_to_chrome = "/usr/bin/google-chrome-stable"
             hti = Html2Image(output_path="src/public/images", browser_executable=path_to_chrome, custom_flags=['--disable-gpu', '--no-sandbox', '--disable-software-rasterizer'])
-            hti.screenshot(html_str=output, save_as=image_name, )
+            hti.screenshot(html_str=output, save_as=image_name, size=(1920, 1080))
     
             return f"src/public/images/{image_name}"
 
